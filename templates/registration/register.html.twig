@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-4 text-center">Inscription</h1>
+
+        {{ form_start(registrationForm) }}
+            <div class="mb-3">
+                {{ form_label(registrationForm.email) }}
+                {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.plainPassword.first) }}
+                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.plainPassword.second) }}
+                {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="mb-3 form-check">
+                {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                {{ form_label(registrationForm.agreeTerms, null, {'label_attr': {'class': 'form-check-label'}}) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+        {{ form_end(registrationForm) }}
+
+        <p class="text-center mt-3">
+            <a href="{{ path('app_login') }}">Déjà un compte ? Connectez-vous ici</a>
+        </p>
+    </div>
+{% endblock %}
