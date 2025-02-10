@@ -18,7 +18,7 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Recherche des véhicules selon des critères définis.
+     *
      *
      * @param array $criteria
      * @return Vehicle[]
@@ -46,7 +46,7 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Trouve des véhicules similaires basés sur la marque et le prix.
+     * 
      *
      * @param Vehicle $vehicle
      * @return Vehicle[]
@@ -54,20 +54,20 @@ class VehicleRepository extends ServiceEntityRepository
     public function findSimilarVehicles(Vehicle $vehicle): array
     {
         return $this->createQueryBuilder('v')
-            ->andWhere('v.id != :vehicleId') // Exclure le véhicule actuel
-            ->andWhere('v.brand = :brand') // Même marque
-            ->andWhere('v.dailyPrice BETWEEN :minPrice AND :maxPrice') // Prix proche
+            ->andWhere('v.id != :vehicleId') 
+            ->andWhere('v.brand = :brand') 
+            ->andWhere('v.dailyPrice BETWEEN :minPrice AND :maxPrice') 
             ->setParameter('vehicleId', $vehicle->getId())
             ->setParameter('brand', $vehicle->getBrand())
-            ->setParameter('minPrice', $vehicle->getDailyPrice() * 0.8) // Fourchette de 20% autour du prix
+            ->setParameter('minPrice', $vehicle->getDailyPrice() * 0.8) 
             ->setParameter('maxPrice', $vehicle->getDailyPrice() * 1.2)
-            ->setMaxResults(5) // Limite à 5 véhicules similaires
+            ->setMaxResults(5)
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * Vérifie si un utilisateur a déjà réservé un véhicule donné.
+     * 
      *
      * @param int $userId
      * @param int $vehicleId
@@ -86,7 +86,7 @@ class VehicleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne le nombre total de réservations pour un véhicule.
+     * 
      *
      * @param int $vehicleId
      * @return int

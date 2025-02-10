@@ -173,12 +173,12 @@ class VehicleController extends AbstractController
     public function addFavorite(Vehicle $vehicle, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
-        if (!$user instanceof User) { // Vérification explicite
+        if (!$user instanceof User) {
             throw $this->createAccessDeniedException("Vous devez être connecté pour ajouter un favori.");
         }
     
         $user->addFavorite($vehicle);
-        $entityManager->persist($user); // Persist pour être sûr que Doctrine enregistre bien l'entité
+        $entityManager->persist($user); 
         $entityManager->flush();
     
         return $this->redirectToRoute('vehicle_show', ['id' => $vehicle->getId()]);

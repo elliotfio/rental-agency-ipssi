@@ -83,9 +83,9 @@ class Vehicle
 
     public function setDailyPrice(float $dailyPrice): static
     {
-        // Appliquer une réduction de 10% si le prix est supérieur à 400€
+    
         if ($dailyPrice >= 400) {
-            $dailyPrice *= 0.9; // Réduction de 10%
+            $dailyPrice *= 0.9;
         }
         $this->dailyPrice = $dailyPrice;
         return $this;

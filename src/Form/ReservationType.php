@@ -25,7 +25,6 @@ class ReservationType extends AbstractType
                 'label' => 'Date de fin'
             ]);
 
-        // On ajoute le champ véhicule uniquement si c'est pour une nouvelle réservation
         if ($options['include_vehicle']) {
             $builder->add('vehicle', EntityType::class, [
                 'class' => Vehicle::class,
@@ -45,7 +44,7 @@ class ReservationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Reservation::class,
-            'include_vehicle' => false, // Par défaut, on ne l'affiche pas
+            'include_vehicle' => false, 
         ]);
     }
 }
