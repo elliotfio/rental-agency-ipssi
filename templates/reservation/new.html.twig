@@ -1,11 +1,65 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Reservation{% endblock %}
+{% block title %}Réserver un véhicule{% endblock %}
 
 {% block body %}
-    <h1>Create new Reservation</h1>
+<div class="container mt-4">
+    <h1 class="text-center">Réserver un véhicule</h1>
 
-    {{ include('reservation/_form.html.twig') }}
+    <div class="card shadow-sm p-4">
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Véhicule</label>
+                <input type="text" class="form-control" value="{{ vehicle.brand }} ({{ vehicle.licencePlate }})" disabled>
+            </div>
 
-    <a href="{{ path('app_reservation_index') }}">back to list</a>
+            <div class="mb-3">
+                <label for="startDate" class="form-label fw-bold">Date de début</label>
+                <input type="date" id="startDate" name="startDate" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="endDate" class="form-label fw-bold">Date de fin</label>
+                <input type="date" id="endDate" name="endDate" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Prix total</label>
+                <input type="text" id="totalPrice" class="form-control" value="0 €" readonly>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ path('vehicle_index') }}" class="btn btn-secondary">Retour</a>
+                <button type="submit" class="btn btn-primary">Confirmer la réservation</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+        const totalPriceInput = document.getElementById("totalPrice");
+        const dailyPrice = {{ vehicle.dailyPrice }}; // Prix du véhicule par jour
+
+        function updateTotalPrice() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+
+            if (!isNaN(startDate) && !isNaN(endDate) && endDate > startDate) {
+                const diffTime = Math.abs(endDate - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const totalPrice = diffDays * dailyPrice;
+                totalPriceInput.value = totalPrice + " €";
+            } else {
+                totalPriceInput.value = "0 €";
+            }
+        }
+
+        startDateInput.addEventListener("change", updateTotalPrice);
+        endDateInput.addEventListener("change", updateTotalPrice);
+    });
+</script>
+
 {% endblock %}

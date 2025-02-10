@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block body %}
+    <h1>Liste des utilisateurs</h1>
+
+    {% if users is defined and users|length > 0 %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.roles|join(', ') }}</td>
+                        <td>
+                            {% if 'ROLE_ADMIN' not in user.roles %}
+                                <a href="{{ path('admin_promote', {'id': user.id}) }}" class="btn btn-warning">Promouvoir Admin</a>
+                            {% endif %}
+                            <form action="{{ path('admin_delete', {'id': user.id}) }}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="alert alert-warning">Aucun utilisateur trouvé.</p>
+    {% endif %}
+{% endblock %}

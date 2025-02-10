@@ -1,45 +1,64 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-    <div class="container">
-        <h1 class="my-4 text-center">Liste des Véhicules</h1>
+{% block title %}Liste des Véhicules{% endblock %}
 
-        <table class="table table-striped">
-            <thead class="table-dark">
+{% block body %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Liste des Véhicules</h1>
+
+    <table class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Marque</th>
+                <th>Immatriculation</th>
+                <th>Prix/Jour</th>
+                <th>Disponibilité</th>
+                <th>Réservations</th>
+                <th>Note Moyenne</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehicle in vehicles %}
                 <tr>
-                    <th>ID</th>
-                    <th>Marque</th>
-                    <th>Immatriculation</th>
-                    <th>Prix/Jour</th>
-                    <th>Disponibilité</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for vehicle in vehicles %}
-                    <tr>
-                        <td>{{ vehicle.id }}</td>
-                        <td>{{ vehicle.brand }}</td>
-                        <td>{{ vehicle.licencePlate }}</td>
-                        <td>{{ vehicle.dailyPrice }} €</td>
-                        <td>{{ vehicle.available ? 'Disponible' : 'Loué' }}</td>
-                        <td>
-                            <a href="{{ path('vehicle_show', {id: vehicle.id}) }}" class="btn btn-info btn-sm">Voir</a>
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <a href="{{ path('vehicle_edit', {id: vehicle.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
-                                <form method="post" action="{{ path('vehicle_delete', {id: vehicle.id}) }}" style="display:inline;" onsubmit="return confirm('Confirmer la suppression ?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ vehicle.id) }}">
-                                    <button class="btn btn-danger btn-sm">Supprimer</button>
+                    <td>{{ vehicle.id }}</td>
+                    <td>{{ vehicle.brand }}</td>
+                    <td>{{ vehicle.licencePlate }}</td>
+                    <td>{{ vehicle.dailyPrice }} €</td>
+                    <td>
+                        {% if vehicle.isAvailable %}
+                            <span class="badge bg-success">Disponible</span>
+                        {% else %}
+                            <span class="badge bg-danger">Indisponible</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ vehicle.getTotalReservations() }}</td>
+                    <td>{{ vehicle.getAverageRating() }}/5 ⭐</td>
+                    <td>
+                        <a href="{{ path('vehicle_show', {'id': vehicle.id}) }}" class="btn btn-info btn-sm">Voir</a>
+
+                        {% if app.user %}
+                            {% if app.user.favorites.contains(vehicle) %}
+                               <form action="{{ path('vehicle_remove_favorite', {'id': vehicle.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('favorite' ~ vehicle.id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">❤️</button>
+                                </form>
+                            {% else %}
+                                <form action="{{ path('vehicle_add_favorite', {'id': vehicle.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('favorite' ~ vehicle.id) }}">
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">💙</button>
                                 </form>
                             {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        {% if is_granted('ROLE_ADMIN') %}
-            <a href="{{ path('vehicle_new') }}" class="btn btn-success">Ajouter un véhicule</a>
-        {% endif %}
-    </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">Aucun véhicule disponible.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

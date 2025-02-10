@@ -69,4 +69,25 @@ class Comment
 
         return $this;
     }
+    public function getCustomer(): ?User
+{
+    return $this->customer;
+}
+
+    public function setCustomer(User $customer): static
+    {
+        $this->customer = $customer;
+        return $this;
+    }
+
+    public function getVehicle(): ?Vehicle
+    {
+        return $this->vehicle;
+    }
+
+    public function setVehicle(Vehicle $vehicle): static
+    {
+        $this->vehicle = $vehicle;
+        return $this;
+}
 }

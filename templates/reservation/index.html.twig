@@ -1,39 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reservation index{% endblock %}
+{% block title %}Mes Réservations{% endblock %}
 
 {% block body %}
-    <h1>Reservation index</h1>
+<div class="container mt-4">
+    <h1 class="text-center">Mes Réservations</h1>
 
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>StartDate</th>
-                <th>EndDate</th>
-                <th>TotalPrice</th>
-                <th>actions</th>
+                <th>Véhicule</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Prix Total</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for reservation in reservations %}
-            <tr>
-                <td>{{ reservation.id }}</td>
-                <td>{{ reservation.startDate ? reservation.startDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ reservation.endDate ? reservation.endDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ reservation.totalPrice }}</td>
-                <td>
-                    <a href="{{ path('app_reservation_show', {'id': reservation.id}) }}">show</a>
-                    <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
+            {% for reservation in reservations %}
+                <tr>
+                    <td>{{ reservation.vehicle.brand }} - {{ reservation.vehicle.licencePlate }}</td>
+                    <td>{{ reservation.startDate|date('d/m/Y') }}</td>
+                    <td>{{ reservation.endDate|date('d/m/Y') }}</td>
+                    <td>{{ reservation.totalPrice }} €</td>
+                    <td>
+                        {% if reservation.startDate > "now"|date('Y-m-d') %}
+                            <a href="{{ path('reservation_edit', {'id': reservation.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                            <form method="post" action="{{ path('reservation_cancel', {'id': reservation.id}) }}" onsubmit="return confirm('Annuler cette réservation ?');" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ reservation.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Annuler</button>
+                            </form>
+                        {% else %}
+                            <span class="text-muted">Non modifiable</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="text-center">Aucune réservation trouvée.</td></tr>
+            {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('app_reservation_new') }}">Create new</a>
+</div>
 {% endblock %}

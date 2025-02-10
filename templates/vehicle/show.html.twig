@@ -1,38 +1,78 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Vehicle{% endblock %}
+{% block title %}Détails du Véhicule{% endblock %}
 
 {% block body %}
-    <h1>Vehicle</h1>
+<div class="container mt-4">
+    <h1 class="text-center">{{ vehicle.brand }} ({{ vehicle.licencePlate }})</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ vehicle.id }}</td>
-            </tr>
-            <tr>
-                <th>Brand</th>
-                <td>{{ vehicle.brand }}</td>
-            </tr>
-            <tr>
-                <th>LicencePlate</th>
-                <td>{{ vehicle.licencePlate }}</td>
-            </tr>
-            <tr>
-                <th>DailyPrice</th>
-                <td>{{ vehicle.dailyPrice }}</td>
-            </tr>
-            <tr>
-                <th>Available</th>
-                <td>{{ vehicle.available ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- Affichage des images -->
+    <div class="row">
+        {% if vehicle.images is defined and vehicle.images|length > 0 %}
+            {% for image in vehicle.images %}
+                <div class="col-md-4">
+                    <img src="{{ asset('uploads/vehicles/' ~ image.filename) }}" class="img-fluid rounded shadow-sm">
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">Aucune image disponible pour ce véhicule.</p>
+        {% endif %}
+    </div>
 
-    <a href="{{ path('app_vehicle_index') }}">back to list</a>
+    <div class="card mt-3 p-3">
+        <p><strong>Prix par jour :</strong> {{ vehicle.dailyPrice }} €</p>
+        <p><strong>Disponibilité :</strong> 
+            {% if vehicle.isAvailable() %}
+                <span class="badge bg-success">Disponible</span>
+            {% else %}
+                <span class="badge bg-danger">Indisponible</span>
+            {% endif %}
+        </p>
+        <p><strong>Nombre de réservations :</strong> {{ vehicle.getTotalReservations() }}</p>
+        <p><strong>Note moyenne :</strong> {{ vehicle.getAverageRating() }}/5 ⭐</p>
 
-    <a href="{{ path('app_vehicle_edit', {'id': vehicle.id}) }}">edit</a>
+        {% if app.user %}
+            {% if vehicle.favorites.contains(app.user) %}
+                <form action="{{ path('vehicle_remove_favorite', {'id': vehicle.id}) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm">Retirer des favoris</button>
+                </form>
+            {% else %}
+                <form action="{{ path('vehicle_add_favorite', {'id': vehicle.id}) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-primary btn-sm">Ajouter aux favoris</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
 
-    {{ include('vehicle/_delete_form.html.twig') }}
+    <!-- Section Commentaires -->
+    <div class="card mt-4 p-3">
+        <h4>Commentaires et avis</h4>
+        
+        {% if comments is defined and comments|length > 0 %}
+            {% for comment in comments %}
+                <div class="border-bottom mb-2 pb-2">
+                    <p><strong>{{ comment.customer.email }}</strong> ({{ comment.createdAt|date('d/m/Y') }})</p>
+                    <p>⭐ {{ comment.rating }}/5</p>
+                    <p>{{ comment.content }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">Aucun commentaire pour ce véhicule.</p>
+        {% endif %}
+    </div>
+
+    <!-- Formulaire d'ajout de commentaire (seulement si l'utilisateur a déjà loué) -->
+    {% if app.user and hasRented is defined and hasRented %}
+        <div class="card mt-4 p-3">
+            <h4>Ajouter un commentaire</h4>
+            {{ form_start(commentForm) }}
+            {{ form_row(commentForm.rating, {'attr': {'class': 'form-control'}}) }}
+            {{ form_row(commentForm.content, {'attr': {'class': 'form-control'}}) }}
+            <button type="submit" class="btn btn-success mt-2">Poster le commentaire</button>
+            {{ form_end(commentForm) }}
+        </div>
+    {% endif %}
+
+    <a href="{{ path('vehicle_index') }}" class="btn btn-secondary mt-4">Retour à la liste</a>
+</div>
 {% endblock %}

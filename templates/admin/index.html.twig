@@ -2,34 +2,40 @@
 
 {% block body %}
     <div class="container">
-        <h1 class="my-4 text-center">Gestion des Utilisateurs</h1>
+        <h1 class="my-4 text-center">Tableau de Bord Admin</h1>
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Rôle</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
+        <h2>Liste des utilisateurs</h2>
+
+        {% if users is defined and users|length > 0 %}
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td>{{ user.id }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.roles|join(', ') }}</td>
-                        <td>
-                            {% if 'ROLE_ADMIN' not in user.roles %}
-                                <a href="{{ path('admin_promote', {'id': user.id}) }}" class="btn btn-warning btn-sm">Promouvoir Admin</a>
-                            {% endif %}
-                            <form action="{{ path('admin_delete', {'id': user.id}) }}" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                            </form>
-                        </td>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Actions</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.roles|join(', ') }}</td>
+                            <td>
+                                {% if 'ROLE_ADMIN' not in user.roles %}
+                                    <a href="{{ path('admin_promote', {'id': user.id}) }}" class="btn btn-warning btn-sm">Promouvoir Admin</a>
+                                {% endif %}
+                                <form action="{{ path('admin_delete', {'id': user.id}) }}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="alert alert-warning">Aucun utilisateur trouvé.</p>
+        {% endif %}
     </div>
 {% endblock %}

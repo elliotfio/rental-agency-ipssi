@@ -15,15 +15,20 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'dashboard')]
-    public function dashboard(): Response
+    #[Route('/', name: 'dashboard')]
+    public function dashboard(UserRepository $userRepository): Response
     {
-        return $this->render('admin/index.html.twig');
+        $users = $userRepository->findAll(); 
+    
+        return $this->render('admin/index.html.twig', [
+            'users' => $users, 
+        ]);
     }
 
     #[Route('/users', name: 'users')]
     public function manageUsers(UserRepository $userRepository): Response
     {
-        return $this->render('admin/users.html.twig', [
+        return $this->render('admin/index.html.twig', [
             'users' => $userRepository->findAll(),
         ]);
     }

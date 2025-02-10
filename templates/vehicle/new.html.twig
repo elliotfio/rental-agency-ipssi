@@ -1,11 +1,40 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Vehicle{% endblock %}
+{% block title %}Ajouter un véhicule{% endblock %}
 
 {% block body %}
-    <h1>Create new Vehicle</h1>
+    <div class="container mt-5">
+        <h1 class="text-center">Ajouter un véhicule</h1>
 
-    {{ include('vehicle/_form.html.twig') }}
+        <div class="card p-4 mt-4">
+            {{ form_start(form) }}
+            
+            <div class="mb-3">
+                {{ form_label(form.brand, 'Marque', {'class': 'form-label'}) }}
+                {{ form_widget(form.brand, {'attr': {'class': 'form-control'}}) }}
+            </div>
 
-    <a href="{{ path('app_vehicle_index') }}">back to list</a>
+            <div class="mb-3">
+                {{ form_label(form.licencePlate, 'Immatriculation', {'class': 'form-label'}) }}
+                {{ form_widget(form.licencePlate, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.dailyPrice, 'Prix Journalier (€)', {'class': 'form-label'}) }}
+                {{ form_widget(form.dailyPrice, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-check mb-3">
+                {{ form_widget(form.available, {'attr': {'class': 'form-check-input'}}) }}
+                {{ form_label(form.available, 'Disponible', {'class': 'form-check-label ms-2'}) }}
+            </div>
+
+            <button type="submit" class="btn btn-success">Enregistrer</button>
+            {{ form_end(form) }}
+
+            <div class="mt-3">
+                <a href="{{ path('vehicle_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

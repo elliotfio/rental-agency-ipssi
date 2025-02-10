@@ -31,9 +31,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Reservation::class, cascade: ['persist', 'remove'])]
     private Collection $reservations;
 
+    #[ORM\ManyToMany(targetEntity: Vehicle::class, inversedBy: "favorites")]
+    #[ORM\JoinTable(name: 'user_favorites')]
+    private Collection $favorites;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -54,7 +59,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        // Symfony exige que chaque utilisateur ait au moins un rôle
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
         return array_unique($roles);
@@ -77,10 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function eraseCredentials(): void
-    {
-        // Méthode requise par UserInterface, utile si on stocke des infos sensibles (ex: token temporaire)
-    }
+    public function eraseCredentials(): void {}
 
     public function getUserIdentifier(): string
     {
@@ -109,5 +110,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
         return $this;
+    }
+
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+    
+    public function addFavorite(Vehicle $vehicle): void
+    {
+        if (!$this->favorites->contains($vehicle)) {
+            $this->favorites->add($vehicle);
+        }
+    }
+    
+    public function removeFavorite(Vehicle $vehicle): void
+    {
+        $this->favorites->removeElement($vehicle);
     }
 }
